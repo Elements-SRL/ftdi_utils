@@ -37,5 +37,9 @@
 *.out
 *.app
 
-# debug information files
-*.dwo
+*.pro.user
+.qmake.stash
+.vs/
+debug/
+release/
+build/
