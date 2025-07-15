@@ -76,6 +76,7 @@ typedef enum {
     DeviceSubversionEl03F_4F_PCBV01_AnalogOut = 9,
     DeviceSubversionEl03F_4F_PCBV02 = 10,
     DeviceSubversionEl03F_4F_PCBV03b = 11,
+    DeviceSubversionEl04F2_DacExt = 12,
 
     /*! Subversions used for ver = 08 */
     DeviceSubversionENPR = 2,
