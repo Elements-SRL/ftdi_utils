@@ -28,7 +28,7 @@ typedef enum {
     DeviceVersionENPR = 0x08,
     DeviceVersionE1 = 0x09,
     DeviceVersionE4p = 0x0A,
-    DeviceVersionE2 = 0x0B,
+    DeviceVersionE2 = 0x0C,
     DeviceVersionE8p = 0x10,
     DeviceVersionSuperDuck = 0x11,
     DeviceVersionDemo = 0xFD,
@@ -111,7 +111,7 @@ typedef enum {
     DeviceSubversionEl07CDx4Patch_artix7_PCBV02 = 21,
     DeviceSubversionEl07CDx8Patch_artix7_PCBV02 = 22,
 
-    /*! Subversions used for ver = 0B */
+    /*! Subversions used for ver = 0C */
     DeviceSubversionE2HC = 1,
 
     /*! Subversions used for ver = 10 */
