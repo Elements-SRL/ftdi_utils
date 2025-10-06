@@ -119,6 +119,8 @@ typedef enum {
 
     /*! Subversions used for ver = 10 */
     DeviceSubversionE8nPatch_artix7_PCBV01 = 1,
+    DeviceSubversionE8nPatch_artix7_EL07c_PCBV02 = 2,
+    DeviceSubversionE8nPatch_artix7_EL07e_PCBV02 = 3,
 
     /*! Subversions used for ver = 11 */
     DeviceSubversionSuperDuckPcbV01 = 1,
