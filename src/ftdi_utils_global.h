@@ -16,5 +16,6 @@
 #else
 #  define FTDIUTILSSHARED_EXPORT __declspec(dllimport)
 #endif
+#endif
 
 #endif // FTDI_UTILS_GLOBAL_H

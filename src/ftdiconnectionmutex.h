@@ -1,7 +1,9 @@
 #ifndef FTDICONNECTIONMUTEX_H
 #define FTDICONNECTIONMUTEX_H
 
+#include "ftdi_utils_global.h"
+
 #include <mutex>
-extern std::mutex ftdiConnectionMutex;
+extern FTDIUTILSSHARED_EXPORT std::mutex ftdiConnectionMutex;
 
 #endif // FTDICONNECTIONMUTEX_H
