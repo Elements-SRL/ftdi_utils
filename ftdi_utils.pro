@@ -13,11 +13,11 @@ CONFIG(release, debug|release) {
 }
 
 TEMPLATE = lib
-#DEFINES += FTDI_UTILS_EXPORTS
-DEFINES += FTDI_UTILS_STATIC
-CONFIG += staticlib
+DEFINES += FTDI_UTILS_EXPORTS
+# DEFINES += FTDI_UTILS_STATIC
+# CONFIG += staticlib
 
-CONFIG += c++17
+CONFIG += c++20
 
 include(version.pri)
 
@@ -30,13 +30,15 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
 SOURCES += \
     src/ftdieeprom.cpp \
     src/ftdieeprom56.cpp \
-    src/ftdieepromdemo.cpp
+    src/ftdieepromdemo.cpp \
+    src/ftdiconnectionmutex.cpp
 
 HEADERS += \
     src/ftdi_utils_global.h \
     src/ftdieeprom.h \
     src/ftdieeprom56.h \
-    src/ftdieepromdemo.h
+    src/ftdieepromdemo.h \
+    src/ftdiconnectionmutex.h
 
 INCLUDEPATH += \
     ./src
