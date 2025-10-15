@@ -10,7 +10,7 @@
 
 class Ftd2xxWrapper {
 public:
-    // --- Global operations (no handle) ---
+    /*! Global operations (no handle) */
     static FT_STATUS FTW_ListDevices(PVOID pArg1, PVOID pArg2, DWORD Flags);
     static FT_STATUS FTW_CreateDeviceInfoList(LPDWORD numDevs);
     static FT_STATUS FTW_GetDeviceInfoList(FT_DEVICE_LIST_INFO_NODE* list, LPDWORD numDevs);
@@ -23,7 +23,7 @@ public:
     static FT_STATUS SPIW_OpenChannel(DWORD index, FT_HANDLE *handle);
     static FT_STATUS SPIW_CloseChannel(FT_HANDLE handle);
 
-    // --- Handle-based operations ---
+    /*! Handle-based operations */
     static FT_STATUS FTW_SetBitMode(FT_HANDLE ftHandle, UCHAR ucMask, UCHAR ucEnable);
     static FT_STATUS FTW_SetLatencyTimer( FT_HANDLE ftHandle, UCHAR ucLatency);
     static FT_STATUS FTW_SetUSBParameters( FT_HANDLE ftHandle, ULONG ulInTransferSize, ULONG ulOutTransferSize);
@@ -43,6 +43,11 @@ public:
     static FT_STATUS FTW_ReadGPIO(FT_HANDLE handle, UCHAR *value);
 
     static void CleanupHandle(FT_HANDLE handle);
+
+    /*! Higher level utilities */
+    static int32_t getDeviceIndex(std::string serial);
+    static std::string getDeviceSerial(uint32_t index, bool excludeLetter);
+    static bool getDeviceCount(DWORD &numDevs);
 
 private:
     static std::mutex globalMutex;

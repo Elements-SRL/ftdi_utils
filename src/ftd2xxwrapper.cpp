@@ -169,3 +169,49 @@ void Ftd2xxWrapper::CleanupHandle(FT_HANDLE handle) {
     std::lock_guard<std::mutex> guard(mapMutex);
     handleMutexMap.erase(handle);
 }
+
+int32_t Ftd2xxWrapper::getDeviceIndex(std::string serial) {
+    /*! Gets number of devices */
+    DWORD numDevs;
+    bool devCountOk = getDeviceCount(numDevs);
+    if (!devCountOk) {
+        return -1;
+    }
+    else if (numDevs == 0) {
+        return -1;
+    }
+
+    for (int32_t index = 0; index < numDevs; index++) {
+        std::string deviceId = getDeviceSerial(index, false);
+        if (deviceId == serial) {
+            return index;
+        }
+    }
+    return -1;
+}
+
+std::string Ftd2xxWrapper::getDeviceSerial(uint32_t index, bool excludeLetter) {
+    char buffer[64];
+    std::string serial;
+    FT_STATUS FT_Result = Ftd2xxWrapper::FTW_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
+    if (FT_Result == FT_OK) {
+        serial = buffer;
+        if (excludeLetter) {
+            return serial.substr(0, serial.size()-1); /*!< Removes channel character */
+        }
+        else {
+            return serial;
+        }
+    }
+    return "";
+}
+
+bool Ftd2xxWrapper::getDeviceCount(DWORD &numDevs) {
+    /*! Get the number of connected devices */
+    numDevs = 0;
+    FT_STATUS FT_Result = Ftd2xxWrapper::FTW_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
+    if (FT_Result == FT_OK) {
+        return true;
+    }
+    return false;
+}

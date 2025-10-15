@@ -31,14 +31,16 @@ SOURCES += \
     src/ftdieeprom.cpp \
     src/ftdieeprom56.cpp \
     src/ftdieepromdemo.cpp \
-    src/ftd2xxwrapper.cpp
+    src/ftd2xxwrapper.cpp \
+    src/ftdicalibrationeeprom.cpp
 
 HEADERS += \
     src/ftdi_utils_global.h \
     src/ftdieeprom.h \
     src/ftdieeprom56.h \
     src/ftdieepromdemo.h \
-    src/ftd2xxwrapper.h
+    src/ftd2xxwrapper.h \
+    src/ftdicalibrationeeprom.h
 
 INCLUDEPATH += \
     ./src
