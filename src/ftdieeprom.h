@@ -13,6 +13,8 @@
 #include "ftd2xx.h"
 #endif
 
+#include "ftdi_utils_global.h"
+
 #define EEPROM_ENCRYPTION_KEY_LENGTH 8
 
 typedef enum {
@@ -165,7 +167,8 @@ inline bool operator != (const DeviceTuple_t &a, const DeviceTuple_t &b) {
     return !(a == b);
 }
 
-class FtdiEeprom {
+
+class FTDIUTILSSHARED_EXPORT FtdiEeprom {
 public:
     FtdiEeprom(std::string deviceId);
 

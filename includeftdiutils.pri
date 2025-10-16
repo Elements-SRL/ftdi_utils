@@ -6,3 +6,4 @@ msvc:win32:CONFIG(release, debug|release): LIBS += -L$$(FTDI_UTILS_PATH)lib/rele
 else:msvc:win32:CONFIG(debug, debug|release): LIBS += -L$$(FTDI_UTILS_PATH)lib/debug/ -lftdi_utilsd
 
 include($$(FTD2XX_PATH)includeftd2xx.pri)
+include($$(LIBMPSSE_PATH)includelibmpsse.pri)

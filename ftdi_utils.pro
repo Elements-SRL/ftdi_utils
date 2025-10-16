@@ -13,11 +13,11 @@ CONFIG(release, debug|release) {
 }
 
 TEMPLATE = lib
-#DEFINES += FTDI_UTILS_EXPORTS
+# DEFINES += FTDI_UTILS_EXPORTS
 DEFINES += FTDI_UTILS_STATIC
 CONFIG += staticlib
 
-CONFIG += c++17
+CONFIG += c++20
 
 include(version.pri)
 
@@ -30,13 +30,17 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_PATCH}
 SOURCES += \
     src/ftdieeprom.cpp \
     src/ftdieeprom56.cpp \
-    src/ftdieepromdemo.cpp
+    src/ftdieepromdemo.cpp \
+    src/ftd2xxwrapper.cpp \
+    src/ftdicalibrationeeprom.cpp
 
 HEADERS += \
     src/ftdi_utils_global.h \
     src/ftdieeprom.h \
     src/ftdieeprom56.h \
-    src/ftdieepromdemo.h
+    src/ftdieepromdemo.h \
+    src/ftd2xxwrapper.h \
+    src/ftdicalibrationeeprom.h
 
 INCLUDEPATH += \
     ./src
@@ -44,3 +48,4 @@ DEPENDPATH += \
     ./src
 
 include($$(FTD2XX_PATH)includeftd2xx.pri)
+include($$(LIBMPSSE_PATH)includelibmpsse.pri)

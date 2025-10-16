@@ -3,7 +3,7 @@
 
 #include "ftdieeprom.h"
 
-class FtdiEepromDemo : public FtdiEeprom {
+class FTDIUTILSSHARED_EXPORT FtdiEepromDemo : public FtdiEeprom {
 public:
     FtdiEepromDemo(std::string deviceId);
 
