@@ -105,7 +105,6 @@ bool FtdiCalibrationEeprom::writeBytes(unsigned char * values, unsigned int addr
         return false;
     }
 
-    bool ret;
     FT_STATUS status;
 
     /*! Write is disabled by successful write */
@@ -189,8 +188,8 @@ bool FtdiCalibrationEeprom::pollWriteDone() {
         return false;
     }
 
-    unsigned char eepromStatus = CEE_WRITE_DONE;
-    while (eepromStatus & CEE_WRITE_DONE) { /*! \todo FCON magari mettere un timeout */
+    unsigned char eepromStatus = CEE_WRITE_BUSY;
+    while (eepromStatus & CEE_WRITE_BUSY) { /*! \todo FCON magari mettere un timeout */
         this->getStatus(eepromStatus);
     }
     return true;

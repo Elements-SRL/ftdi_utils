@@ -13,7 +13,7 @@
 #define CEE_SPI_PROG_DISABLE 0x08
 #define CEE_FPGA_RESET_ENABLE 0x00
 #define CEE_FPGA_RESET_DISABLE 0x01
-#define CEE_WRITE_DONE 0x01
+#define CEE_WRITE_BUSY 0x01
 #define CEE_EEPROM_SIZE 2048
 
 /*! Eeprom commands */
