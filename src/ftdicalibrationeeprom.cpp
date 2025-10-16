@@ -28,8 +28,7 @@ bool FtdiCalibrationEeprom::openConnection(uint32_t channel) {
         return false;
     }
 
-    status = this->enableFPGA(false);
-    if (status != FT_OK) {
+    if (!this->enableFPGA(false)) {
         connectionOpened = false;
         return false;
     }
@@ -42,13 +41,11 @@ bool FtdiCalibrationEeprom::closeConnection() {
         return true;
     }
 
-    FT_STATUS status;
-    status = this->enableFPGA(true);
-    if (status != FT_OK) {
+    if (!this->enableFPGA(true)) {
         return false;
     }
 
-    status = SPI_CloseChannel(handle);
+    FT_STATUS status = SPI_CloseChannel(handle);
     if (status != FT_OK) {
         return false;
     }
@@ -108,7 +105,7 @@ bool FtdiCalibrationEeprom::writeBytes(unsigned char * values, unsigned int addr
     FT_STATUS status;
 
     /*! Write is disabled by successful write */
-    if (this->enableWrite() == false) {
+    if (!this->enableWrite()) {
         return false;
     }
 

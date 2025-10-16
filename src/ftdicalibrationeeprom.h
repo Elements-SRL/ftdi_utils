@@ -28,17 +28,18 @@ public:
 
     bool openConnection(uint32_t channel);
     bool closeConnection();
-    bool enableFPGA(bool flag);
-    bool enableWrite();
     bool writeBytes(unsigned char * values, unsigned int addr, unsigned int size);
-    bool pollWriteDone();
     bool readBytes(unsigned char * values, unsigned int addr, unsigned int size);
-    bool readByte(unsigned char * value, unsigned int addr, bool start = true, bool end = true);
-    bool getStatus(unsigned char &eepromStatus);
 
     static unsigned int getMemorySize();
 
 private:
+    bool enableFPGA(bool flag);
+    bool enableWrite();
+    bool pollWriteDone();
+    bool getStatus(unsigned char &eepromStatus);
+    bool readByte(unsigned char * value, unsigned int addr, bool start = true, bool end = true);
+
     uint32_t channelIdx;
     ChannelConfig config;
     FT_HANDLE handle;
