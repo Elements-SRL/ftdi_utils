@@ -148,6 +148,7 @@ typedef enum {
     DeviceSubversionProtoE4TtlPulseTrain = 22,
     DeviceSubversionProtoProtoE1ULNSplitted = 23,
     DeviceSubversionProtoE2Uln = 24,
+    DeviceSubversionProtoE16nRamps = 27,
 
     /*! Subversions used for ver = 0xFF */
     DeviceSubversionUndefined = 0xFF
