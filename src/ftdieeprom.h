@@ -87,6 +87,7 @@ typedef enum {
     DeviceSubversionENPRHC = 8,
     DeviceSubversionE2QcDebug = 10,
     DeviceSubversionE2QcDebugIntVcm = 11,
+    DeviceSubversionENPRHcEL06g = 12,
 
     /*! Subversions used for ver = 09 */
     DeviceSubversionE1bEL03C = 2,
