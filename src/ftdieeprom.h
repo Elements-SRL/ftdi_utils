@@ -15,8 +15,6 @@
 
 #include "ftdi_utils_global.h"
 
-#define EEPROM_ENCRYPTION_KEY_LENGTH 8
-
 typedef enum {
     FtdiEepromId56,
     FtdiEepromIdDemo
@@ -174,6 +172,7 @@ inline bool operator != (const DeviceTuple_t &a, const DeviceTuple_t &b) {
 class FTDIUTILSSHARED_EXPORT FtdiEeprom {
 public:
     FtdiEeprom(std::string deviceId);
+    virtual ~FtdiEeprom();
 
     static FtdiEepromId_t getFtdiEepromId(std::string deviceId);
     virtual bool openConnection(char channel = 'A');
@@ -186,13 +185,10 @@ protected:
     std::string deviceId;
     char communicationChannel;
     std::string communicationSerial;
-    uint16_t encryptionKey[EEPROM_ENCRYPTION_KEY_LENGTH];
     DeviceTuple_t deviceTuple;
     uint16_t vcOffset;
     bool connectionOpened = false;
     FT_HANDLE handler;
-
-    void calculateEncryptionKey();
 
     virtual bool loadData() = 0;
     virtual bool loadDeviceTuple() = 0;

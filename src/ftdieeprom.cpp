@@ -5,6 +5,10 @@ FtdiEeprom::FtdiEeprom(std::string deviceId) :
 
 }
 
+FtdiEeprom::~FtdiEeprom() {
+
+}
+
 FtdiEepromId_t FtdiEeprom::getFtdiEepromId(std::string deviceId) {
     if (deviceId == "ePatch Demo") {
         return FtdiEepromIdDemo;
@@ -49,12 +53,6 @@ bool FtdiEeprom::readEepromWord(DWORD address, LPWORD result) {
         return false;
     }
     return true;
-}
-
-void FtdiEeprom::calculateEncryptionKey() {
-    for (int32_t i = 0; i < 8; i++) {
-        encryptionKey[i] = (uint16_t)(deviceId[i]);
-    }
 }
 
 DeviceTuple_t FtdiEeprom::getDeviceTuple() {

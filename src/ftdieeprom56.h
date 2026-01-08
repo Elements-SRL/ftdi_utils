@@ -10,17 +10,13 @@
 class FTDIUTILSSHARED_EXPORT FtdiEeprom56 : public FtdiEeprom {
 public:
     FtdiEeprom56(std::string deviceId);
+    ~FtdiEeprom56();
 
 protected:
     /*! FtdiEeprom interface */
     bool loadData() override;
     bool loadDeviceTuple() override;
     bool loadVcOffset() override;
-
-private:
-    /*! If the value is an uint16_t the key values get duplicated also in the MSByte before */
-    uint16_t wordEncrypt(uint16_t value, uint16_t * key);
-    uint16_t wordDecrypt(uint16_t value, uint16_t * key);
 };
 
 #endif // FTDIEEPROM56_H

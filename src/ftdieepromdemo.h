@@ -6,6 +6,7 @@
 class FTDIUTILSSHARED_EXPORT FtdiEepromDemo : public FtdiEeprom {
 public:
     FtdiEepromDemo(std::string deviceId);
+    ~FtdiEepromDemo();
 
     bool openConnection(char channel = 'A') override;
     bool closeConnection() override;

@@ -6,12 +6,15 @@ FtdiEeprom56::FtdiEeprom56(std::string deviceId) :
     this->loadData();
 }
 
+FtdiEeprom56::~FtdiEeprom56() {
+
+}
+
 bool FtdiEeprom56::loadData() {
     if (!this->openConnection()) {
         return false;
     }
 
-    this->calculateEncryptionKey();
     if (!this->loadDeviceTuple()) {
         return false;
     }
@@ -48,22 +51,4 @@ bool FtdiEeprom56::loadDeviceTuple() {
 
 bool FtdiEeprom56::loadVcOffset() {
     return this->readEepromWord(E56_VC_OFFSET_ADDR, &vcOffset);
-}
-
-uint16_t FtdiEeprom56::wordEncrypt(uint16_t value, uint16_t * key) {
-    uint16_t temp = 0;
-    for (int32_t idx = 0; idx < EEPROM_ENCRYPTION_KEY_LENGTH; idx++) {
-        temp = key[idx] + (key[idx] << 8);
-        value = value ^ temp;
-    }
-    return value;
-}
-
-uint16_t FtdiEeprom56::wordDecrypt(uint16_t value, uint16_t * key) {
-    uint16_t temp = 0;
-    for (int32_t idx = EEPROM_ENCRYPTION_KEY_LENGTH-1; idx >= 0; idx--) {
-        temp = key[idx] + (key[idx] << 8);
-        value = value ^ temp;
-    }
-    return value;
 }

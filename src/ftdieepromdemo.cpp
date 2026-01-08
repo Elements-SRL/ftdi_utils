@@ -6,6 +6,10 @@ FtdiEepromDemo::FtdiEepromDemo(std::string deviceId) :
     this->loadData();
 }
 
+FtdiEepromDemo::~FtdiEepromDemo() {
+
+}
+
 bool FtdiEepromDemo::openConnection(char channel) {
     /*! Appends the channel to the serial */
     communicationSerial = deviceId+channel;
