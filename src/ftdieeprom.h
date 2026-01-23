@@ -54,6 +54,7 @@ typedef enum {
     DeviceSubversionE4n = 3,
     DeviceSubversionE4e = 8,
     DeviceSubversionE4nQc01a = 9,
+    DeviceSubversionE4nQc01a_PCBV02 = 10,
 
     /*! Subversions used for ver = 06 */
     DeviceSubversionTestBoardDlp = 3,
