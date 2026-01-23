@@ -99,6 +99,9 @@ typedef enum {
     DeviceSubversionE1PlusEL03F = 8,
     DeviceSubversionE1HcEL03F = 9,
     DeviceSubversionE1ULN = 10,
+    DeviceSubversionE1LightEL03cPCBV06 = 11,
+    DeviceSubversionE1ULNEL03cPCBV06 = 12,
+    DeviceSubversionE1HcEL09a = 13,
 
     /*! Subversions used for ver = 0A */
     DeviceSubversionEl04Fx4 = 1,
