@@ -21,6 +21,7 @@ public:
     static void SPIW_Init_libMPSSE();
     static void SPIW_Cleanup_libMPSSE();
     static FT_STATUS SPIW_OpenChannel(DWORD index, FT_HANDLE *handle);
+    static FT_HANDLE SPIW_OpenChannelBySerial(std::string serial);
     static FT_STATUS SPIW_CloseChannel(FT_HANDLE handle);
 
     /*! Handle-based operations */

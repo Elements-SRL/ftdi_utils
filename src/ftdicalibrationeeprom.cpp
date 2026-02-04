@@ -1,4 +1,5 @@
 #include "ftdicalibrationeeprom.h"
+#include "ftd2xxwrapper.h"
 
 FtdiCalibrationEeprom::FtdiCalibrationEeprom() {
     config.ClockRate = 3000000; /*! 3MHz */
@@ -7,8 +8,7 @@ FtdiCalibrationEeprom::FtdiCalibrationEeprom() {
     config.Pin = 0x00002323;
 }
 
-bool FtdiCalibrationEeprom::openConnection(uint32_t channel) {
-    channelIdx = channel;
+bool FtdiCalibrationEeprom::openConnection(std::string serial) {
     if (connectionOpened) {
         return true;
     }
@@ -16,8 +16,8 @@ bool FtdiCalibrationEeprom::openConnection(uint32_t channel) {
     FT_STATUS status;
     Init_libMPSSE();
 
-    status = SPI_OpenChannel(channelIdx, &handle);
-    if (status != FT_OK) {
+    handle = Ftd2xxWrapper::SPIW_OpenChannelBySerial(serial);
+    if (handle == nullptr) {
         return false;
     }
 

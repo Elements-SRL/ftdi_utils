@@ -6,6 +6,7 @@
 #include "ftd2xx.h"
 #include "libMPSSE_spi.h"
 #include "stdint.h"
+#include "string"
 
 /*! EEPROM constants */
 #define CEE_XCBUS_DIR 0x09 /*! Set high output pins: FPGA reset 0x01 + SPI program 0x08 */
@@ -26,7 +27,7 @@ class FtdiCalibrationEeprom {
 public:
     FtdiCalibrationEeprom();
 
-    bool openConnection(uint32_t channel);
+    bool openConnection(std::string serial);
     bool closeConnection();
     bool writeBytes(unsigned char * values, unsigned int addr, unsigned int size);
     bool readBytes(unsigned char * values, unsigned int addr, unsigned int size);
@@ -40,7 +41,6 @@ private:
     bool getStatus(unsigned char &eepromStatus);
     bool readByte(unsigned char * value, unsigned int addr, bool start = true, bool end = true);
 
-    uint32_t channelIdx;
     ChannelConfig config;
     FT_HANDLE handle;
     bool connectionOpened = false;

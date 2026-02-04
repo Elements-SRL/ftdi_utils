@@ -67,6 +67,38 @@ FT_STATUS Ftd2xxWrapper::SPIW_OpenChannel(DWORD index, FT_HANDLE *handle) {
     return SPI_OpenChannel(index, handle);
 }
 
+FT_HANDLE Ftd2xxWrapper::SPIW_OpenChannelBySerial(std::string serial) {
+    std::lock_guard<std::mutex> lock(globalMutex);
+    DWORD numChannels = 0;
+    FT_DEVICE_LIST_INFO_NODE chanInfo;
+    FT_HANDLE handle = nullptr;
+    FT_STATUS status;
+
+    // 1. Get the current number of SPI channels
+    status = SPI_GetNumChannels(&numChannels);
+    if (status != FT_OK || numChannels == 0) {
+        return nullptr;
+    }
+
+    // 2. Iterate through each channel to find the match
+    for (DWORD i = 0; i < numChannels; i++) {
+        status = SPI_GetChannelInfo(i, &chanInfo);
+        if (status == FT_OK) {
+            // Check if this channel's serial number matches your target
+            if (strcmp(chanInfo.SerialNumber, serial.c_str()) == 0) {
+
+                // 3. Open the channel using the index we JUST verified
+                status = SPI_OpenChannel(i, &handle);
+                if (status == FT_OK) {
+                    return handle;
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 FT_STATUS Ftd2xxWrapper::SPIW_CloseChannel(FT_HANDLE handle) {
     std::lock_guard<std::mutex> lock(globalMutex);
     auto status = SPI_CloseChannel(handle);
