@@ -12,22 +12,21 @@ bool FtdiCalibrationEeprom::openConnection(uint32_t channel) {
     if (connectionOpened) {
         return true;
     }
-    connectionOpened = true;
+
     FT_STATUS status;
     Init_libMPSSE();
 
     status = SPI_OpenChannel(channelIdx, &handle);
     if (status != FT_OK) {
-        connectionOpened = false;
         return false;
     }
 
     status = SPI_InitChannel(handle, &config);
     if (status != FT_OK) {
-        connectionOpened = false;
         return false;
     }
 
+    connectionOpened = true;
     if (!this->enableFPGA(false)) {
         connectionOpened = false;
         return false;
@@ -131,17 +130,29 @@ bool FtdiCalibrationEeprom::readBytes(unsigned char * values, unsigned int addr,
         return false;
     }
 
-    bool ret = true;
-    bool start;
-    bool end;
-    for (unsigned int idx = 0; idx < size; idx++) {
-        start = (idx == 0 ? true : false);
-        end = (idx == size-1 ? true : false);
-        if ((ret = this->readByte(values+idx, addr+idx, start, end)) == false) {
-            break;
-        }
+    if (addr >= CEE_EEPROM_SIZE) {
+        return false;
     }
-    return ret;
+
+    FT_STATUS status;
+    DWORD bytesWritten[1] = {0};
+    DWORD bytesRead[1] = {0};
+
+    int bytesToWrite = 0;
+    writeBuffer[bytesToWrite++] = CEE_READ_CMD;
+    writeBuffer[bytesToWrite++] = (unsigned char)((addr >> 8) & 0x00FF);
+    writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
+    status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+    if (status != FT_OK) {
+        return false;
+    }
+
+    status = SPI_Read(handle, values, size, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    if (status != FT_OK) {
+        return false;
+    }
+
+    return true;
 }
 
 bool FtdiCalibrationEeprom::readByte(unsigned char * value, unsigned int addr, bool start, bool end) {
