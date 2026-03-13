@@ -11,10 +11,12 @@ ftdi_utils requires c++17 or newer.
 ## Toolchain
 Elements builds the ftdi_utils statically using Qt Creator with the Qt libraries 6.7.3 and MSVC 2022 [Qt Community](https://www.qt.io/download-dev)
 
-Note: the Qt Libraries are not used. Qt Creator is used just to compile on different platforms seamlessly.
+Note: the Qt Libraries are not used. Qt Creator is used for legacy reasons.
 
 ## Drivers
 Install EDR4 to make sure all the needed drivers are correctly installed [elements-ic.com/downloads/](https://elements-ic.com/downloads/)
+Disclaimer: EDR4 is officially supported only on windows, hence if you want to build your library for other operating systems/architectures you'll have to manually search and install the needed drivers.
+
 ## Dependencies
 The ftdi_utils requires the ftd2xx library and the libmpsse, both distributed by FTDI [www.ftdichip.com](https://www.ftdichip.com)
 
