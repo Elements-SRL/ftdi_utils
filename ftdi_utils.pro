@@ -2,13 +2,17 @@ QT     -= core gui
 CONFIG -= qt
 
 CONFIG(debug, debug|release) {
+    win32 {
     QMAKE_CXXFLAGS += /Od
+    }
     TARGET = ftdi_utilsd
     DEFINES += DEBUG
 }
 
 CONFIG(release, debug|release) {
+    win32 {
     QMAKE_CXXFLAGS += /O2
+    }
     TARGET = ftdi_utils
 }
 

@@ -1,5 +1,9 @@
 #include "ftd2xxwrapper.h"
 
+#ifdef __linux__
+#include <cstring>
+#endif
+
 std::mutex Ftd2xxWrapper::globalMutex;
 std::mutex Ftd2xxWrapper::mapMutex;
 std::map<FT_HANDLE, std::shared_ptr<std::mutex>> Ftd2xxWrapper::handleMutexMap;
