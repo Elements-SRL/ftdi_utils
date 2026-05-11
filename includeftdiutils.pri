@@ -7,5 +7,6 @@ else:msvc:win32:CONFIG(debug, debug|release): LIBS += -L$$(FTDI_UTILS_PATH)lib/d
 else:unix:CONFIG(release, debug|release): LIBS += -L$$(FTDI_UTILS_PATH)lib/ -lftdi_utils
 else:unix:CONFIG(debug, debug|release): LIBS += -L$$(FTDI_UTILS_PATH)lib/ -lftdi_utilsd
 
+include($$(FTDI_UTILS_PATH)version.pri)
 include($$(FTD2XX_PATH)includeftd2xx.pri)
 include($$(LIBMPSSE_PATH)includelibmpsse.pri)
