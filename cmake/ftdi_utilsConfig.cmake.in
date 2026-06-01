@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+cmake_path(SET LIBMPSSE_PATH_CMAKE "$ENV{LIBMPSSE_PATH}")
+list(APPEND CMAKE_PREFIX_PATH "${LIBMPSSE_PATH_CMAKE}")
+include(CMakeFindDependencyMacro)
+
+find_dependency(MPSSE REQUIRED)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CURRENT_CONFIG "Release")
+else()
+    set(CURRENT_CONFIG "${CMAKE_BUILD_TYPE}")
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/${CURRENT_CONFIG}/ftdi_utilsTargets.cmake")
