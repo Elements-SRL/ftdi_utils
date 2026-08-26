@@ -1,0 +1,131 @@
+name: Build and Install ftdi_utils (tagged release)
+
+# Fires on tags with no "v" prefix, matching the scheme used across the
+# Elements-SRL repos (e.g. 0.2.3). Glob, not regex - matches the pattern
+# documented for e384commLib / er4CommLib.
+on:
+  push:
+    tags:
+      - '[0-9]*.[0-9]*.[0-9]*'
+
+# Shared concurrency group with the commlib pipelines - ftdi_utils, e384commLib
+# and er4CommLib all build on the same self-hosted runner, so only one build
+# runs at a time regardless of which repo triggered it.
+concurrency:
+  group: e384-build-runner
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: [self-hosted, e384-build]
+    defaults:
+      run:
+        # pwsh 7 is not installed on this runner - Windows PowerShell 5.1 only.
+        shell: powershell
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Purge stale CMake cache
+        run: |
+          if (Test-Path "build") {
+            Remove-Item -Recurse -Force "build"
+          }
+
+      - name: Verify required runner environment variables
+        run: |
+          if (-not $env:FTDI_UTILS_PATH) {
+            Write-Error "FTDI_UTILS_PATH is not set as a System env var on this runner. See RUNNER_SETUP.md."
+            exit 1
+          }
+          if (-not $env:LIBMPSSE_PATH) {
+            Write-Error "LIBMPSSE_PATH is not set as a System env var on this runner. See RUNNER_SETUP.md."
+            exit 1
+          }
+          Write-Host "FTDI_UTILS_PATH = $env:FTDI_UTILS_PATH"
+          Write-Host "LIBMPSSE_PATH   = $env:LIBMPSSE_PATH"
+
+      - name: Configure (CMake, Visual Studio generator, Release only)
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_CONFIGURATION_TYPES=Release
+
+      - name: Build (Release)
+        run: |
+          cmake --build build --config Release
+
+      - name: Install (deploys to FTDI_UTILS_PATH)
+        run: |
+          cmake --install build --config Release
+
+      # ----- Version sanity check ------------------------------------------
+      # The tag IS the release version (no "v" prefix, per the Elements-SRL
+      # tag scheme), so this only guards against a forgotten version bump in
+      # CMakeLists.txt - it does not derive the version from CMake.
+      - name: Verify tag matches CMakeLists.txt project version
+        id: ver
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $line = Select-String -Path CMakeLists.txt -Pattern 'VERSION\s+(\d+\.\d+\.\d+)' | Select-Object -First 1
+          $cmakeVer = $line.Matches[0].Groups[1].Value
+          if ($cmakeVer -ne $tag) {
+            Write-Error "Tag ($tag) does not match CMakeLists.txt project VERSION ($cmakeVer). Bump the version and re-tag."
+            exit 1
+          }
+          Write-Host "Tag matches CMakeLists.txt version: $tag"
+          echo "version=$tag" >> $env:GITHUB_OUTPUT
+
+      # ----- Stage a clean copy for the release zip ------------------------
+      # FTDI_UTILS_PATH is the shared, persistent location other repos read
+      # from - it can carry files across builds over time, so it is not a
+      # reliable source for "exactly what this tag produced". Re-running
+      # install with an explicit --prefix (no rebuild) writes a second, clean
+      # copy into a per-run workspace folder purely for zipping.
+      - name: Stage clean install for bundling
+        run: |
+          cmake --install build --config Release --prefix "${{ github.workspace }}\stage\ftdi_utils-${{ steps.ver.outputs.version }}"
+
+      - name: Assemble release bundle
+        id: bundle
+        run: |
+          $stageRoot = "${{ github.workspace }}\stage\ftdi_utils-${{ steps.ver.outputs.version }}"
+          $version = "${{ steps.ver.outputs.version }}"
+
+          @"
+          ftdi_utils build manifest
+          --------------------------
+          Version   : $version
+          Git ref   : ${{ github.ref_name }}
+          Git SHA   : ${{ github.sha }}
+          Config    : Release
+          Generator : Visual Studio 17 2022 (x64)
+          Contents  : static lib (.lib), public headers, CMake config package
+          Excludes  : MPSSE/FTD2XX vendor binaries (not built or redistributed
+                      by this repo - obtain from FTDI directly, see README.md)
+          "@ | Out-File -Encoding utf8 "$stageRoot\BUILD_MANIFEST.txt"
+
+          $zip = "${{ github.workspace }}\ftdi_utils-$version.zip"
+          Compress-Archive -Path "$stageRoot\*" -DestinationPath $zip -Force
+          echo "zip_path=$zip" >> $env:GITHUB_OUTPUT
+          Write-Host "Bundle created: $zip"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ftdi_utils ${{ steps.ver.outputs.version }}
+          body: |
+            Automated build of `ftdi_utils` ${{ steps.ver.outputs.version }}.
+
+            **Included:** static library (`ftdi_utils.lib`), public headers,
+            CMake config package, build manifest.
+
+            **Not included:** MPSSE/FTD2XX vendor binaries. FTDI does not
+            grant redistribution rights for these - obtain them directly from
+            FTDI (see this repo's README.md) and point `LIBMPSSE_PATH` at
+            them when consuming this library.
+          files: ${{ steps.bundle.outputs.zip_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    permissions:
+      contents: write   # required for creating the release
