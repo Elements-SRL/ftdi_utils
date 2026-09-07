@@ -70,6 +70,7 @@ typedef enum {
     DeviceSubversionTestBoardQC01a_PCBV02 = 15,
     DeviceSubversionTestBoardEL09a_PCBV01 = 16,
     DeviceSubversionTestBoardEL08b_PCBV01 = 22,
+    DeviceSubversionTestBoardEL10a_PCBV01 = 27,
 
     /*! Subversions used for ver = 07 */
     DeviceSubversionEl03D = 1,
