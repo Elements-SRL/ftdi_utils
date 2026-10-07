@@ -14,14 +14,14 @@ bool FtdiCalibrationEeprom::openConnection(std::string serial) {
     }
 
     FT_STATUS status;
-    Init_libMPSSE();
+    Ftd2xxWrapper::SPIW_Init_libMPSSE();
 
     handle = Ftd2xxWrapper::SPIW_OpenChannelBySerial(serial);
     if (handle == nullptr) {
         return false;
     }
 
-    status = SPI_InitChannel(handle, &config);
+    status = Ftd2xxWrapper::SPIW_InitChannel(handle, &config);
     if (status != FT_OK) {
         return false;
     }
@@ -44,12 +44,12 @@ bool FtdiCalibrationEeprom::closeConnection() {
         return false;
     }
 
-    FT_STATUS status = SPI_CloseChannel(handle);
+    FT_STATUS status = Ftd2xxWrapper::SPIW_CloseChannel(handle);
     if (status != FT_OK) {
         return false;
     }
 
-    Cleanup_libMPSSE();
+    Ftd2xxWrapper::SPIW_Cleanup_libMPSSE();
 
     connectionOpened = false;
     return true;
@@ -62,10 +62,10 @@ bool FtdiCalibrationEeprom::enableFPGA(bool flag) {
 
     FT_STATUS status;
     if (flag) {
-        status = FT_WriteGPIO(handle, CEE_XCBUS_DIR, CEE_SPI_PROG_DISABLE | CEE_FPGA_RESET_DISABLE);
+        status = Ftd2xxWrapper::FTW_WriteGPIO(handle, CEE_XCBUS_DIR, CEE_SPI_PROG_DISABLE | CEE_FPGA_RESET_DISABLE);
     }
     else {
-        status = FT_WriteGPIO(handle, CEE_XCBUS_DIR, CEE_SPI_PROG_ENABLE | CEE_FPGA_RESET_ENABLE);
+        status = Ftd2xxWrapper::FTW_WriteGPIO(handle, CEE_XCBUS_DIR, CEE_SPI_PROG_ENABLE | CEE_FPGA_RESET_ENABLE);
     }
 
     if (status != FT_OK) {
@@ -84,7 +84,7 @@ bool FtdiCalibrationEeprom::enableWrite() {
     DWORD bytesWritten[1] = {0};
     int bytesToWrite = 0;
     writeBuffer[bytesToWrite++] = CEE_WRITE_ENABLE_CMD;
-    status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = Ftd2xxWrapper::SPIW_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return false;
     }
@@ -113,12 +113,12 @@ bool FtdiCalibrationEeprom::writeBytes(unsigned char * values, unsigned int addr
     writeBuffer[bytesToWrite++] = CEE_PROGRAM_CMD;
     writeBuffer[bytesToWrite++] = (unsigned char)((addr & 0xFF00) >> 8);
     writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
-    status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+    status = Ftd2xxWrapper::SPIW_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return false;
     }
 
-    status = SPI_Write(handle, values, size, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = Ftd2xxWrapper::SPIW_Write(handle, values, size, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return false;
     }
@@ -142,12 +142,12 @@ bool FtdiCalibrationEeprom::readBytes(unsigned char * values, unsigned int addr,
     writeBuffer[bytesToWrite++] = CEE_READ_CMD;
     writeBuffer[bytesToWrite++] = (unsigned char)((addr >> 8) & 0x00FF);
     writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
-    status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+    status = Ftd2xxWrapper::SPIW_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return false;
     }
 
-    status = SPI_Read(handle, values, size, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = Ftd2xxWrapper::SPIW_Read(handle, values, size, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return false;
     }
@@ -173,17 +173,17 @@ bool FtdiCalibrationEeprom::readByte(unsigned char * value, unsigned int addr, b
         writeBuffer[bytesToWrite++] = CEE_READ_CMD;
         writeBuffer[bytesToWrite++] = (unsigned char)((addr & 0xFF00) >> 8);
         writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
-        status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+        status = Ftd2xxWrapper::SPIW_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
         if (status != FT_OK) {
             return false;
         }
     }
 
     if (end) {
-        status = SPI_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+        status = Ftd2xxWrapper::SPIW_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     }
     else {
-        status = SPI_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES);
+        status = Ftd2xxWrapper::SPIW_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES);
     }
     if (status != FT_OK) {
         return false;
@@ -214,13 +214,13 @@ bool FtdiCalibrationEeprom::getStatus(unsigned char &eepromStatus) {
     DWORD bytesRead[1] = {0};
 
     writeBuffer[bytesToWrite++] = CEE_GET_STATUS_CMD;
-    FT_STATUS status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+    FT_STATUS status = Ftd2xxWrapper::SPIW_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return false;
     }
 
     bytesToRead = 1;
-    status = SPI_Read(handle, readBuffer, bytesToRead, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = Ftd2xxWrapper::SPIW_Read(handle, readBuffer, bytesToRead, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return false;
     }
