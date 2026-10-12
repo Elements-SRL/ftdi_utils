@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27) # $<COMPILE_ONLY:...>
+cmake_minimum_required(VERSION 3.27)
 
 project(ftdi_utils
     VERSION 1.6.0
@@ -12,6 +12,10 @@ include(GNUInstallDirs)
 
 add_library(ftdi_utils STATIC
     src/ftd2xxwrapper.cpp
+    src/internal/ftdilibraries.cpp
+    src/internal/handleregistry.cpp
+    src/internal/sharedlibrary.cpp
+    src/internal/usbdevicepresence.cpp
     src/ftdicalibrationeeprom.cpp
     src/ftdieeprom.cpp
     src/ftdieeprom56.cpp
@@ -108,6 +112,7 @@ install(DIRECTORY src/
     FILES_MATCHING
     PATTERN "*.h"
     PATTERN "*.hpp"
+    PATTERN "internal" EXCLUDE   # implementation details, not part of the public API
 )
 
 # Export target
