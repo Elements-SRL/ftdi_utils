@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.27)
 
 project(ftdi_utils
-    VERSION 1.6.0
+    VERSION 1.6.1
     LANGUAGES CXX
 )
 

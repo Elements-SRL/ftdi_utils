@@ -7,6 +7,10 @@
 
 #include "sharedlibrary.h"
 
+#ifdef _WIN32
+#include <windows.h> /*! GetModuleHandleExW, GetModuleFileNameW */
+#endif
+
 /*! File names of the libraries. They can be changed from CMake
  *  (FTDI_UTILS_FTD2XX_LIBNAME, FTDI_UTILS_MPSSE_LIBNAME, FTDI_UTILS_MPSSE_LIBNAME_DEBUG). */
 #ifndef FTDI_UTILS_FTD2XX_LIBNAME
@@ -58,12 +62,58 @@ std::filesystem::path libraryDirectory;
 FtdiLoadError loadErrorType = FtdiLoadError::None;
 std::string loadErrorMessage;
 
-/* Full path of a library: just the file name if no directory is set */
-std::filesystem::path libraryPath(const char *fileName) {
-    if (libraryDirectory.empty()) {
-        return std::filesystem::path(fileName);
+#ifdef _WIN32
+/*! Any object of this module: its address tells GetModuleHandleExW which module contains ftdi_utils */
+const int probe = 0;
+
+/*! Folder of the module that contains ftdi_utils: the executable when it is linked statically in an
+ *  application (EMCR), the DLL when it is linked in a DLL (e.g. e384commlib_labview.dll, loaded by
+ *  LabVIEW.exe from another folder). Empty if it cannot be found. */
+std::filesystem::path folderOfThisModule() {
+    HMODULE module = nullptr;
+    const DWORD flags = GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT;
+    if (!GetModuleHandleExW(flags, reinterpret_cast<LPCWSTR>(&probe), &module)) {
+        return {};
     }
-    return libraryDirectory / fileName;
+
+    /*! GetModuleFileNameW truncates silently: grow the buffer until the whole path fits */
+    std::vector<wchar_t> buffer(MAX_PATH);
+    while (true) {
+        DWORD length = GetModuleFileNameW(module, buffer.data(), static_cast<DWORD>(buffer.size()));
+        if (length == 0) {
+            return {};
+        }
+        if (length < buffer.size()) {
+            return std::filesystem::path(std::wstring(buffer.data(), length)).parent_path();
+        }
+        buffer.resize(buffer.size() * 2);
+    }
+}
+#endif
+
+/* Full path of a library.
+ * - Directory set with setLibraryDirectory: only that folder.
+ * - Otherwise, on Windows: the folder of the module containing ftdi_utils, if the file is there
+ *   (needed when ftdi_utils is inside a DLL loaded by another program, e.g. the LabVIEW wrapper:
+ *   the default search would look only in the folder of LabVIEW.exe).
+ * - Otherwise just the file name: default search (folder of the executable, then System32). */
+std::filesystem::path libraryPath(const char *fileName) {
+    if (!libraryDirectory.empty()) {
+        return libraryDirectory / fileName;
+    }
+
+#ifdef _WIN32
+    std::filesystem::path moduleFolder = folderOfThisModule();
+    if (!moduleFolder.empty()) {
+        std::filesystem::path candidate = moduleFolder / fileName;
+        std::error_code error;
+        if (std::filesystem::exists(candidate, error)) {
+            return candidate;
+        }
+    }
+#endif
+
+    return std::filesystem::path(fileName);
 }
 
 void setError(FtdiLoadError type, const std::string &message) {

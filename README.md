@@ -54,8 +54,11 @@ Note: the FTDI package ships the 64-bit library as `FTD2XX64.dll`: distribute it
 ### Where (Windows)
 
 By default the libraries are searched **only** in:
-1. the folder of the executable;
-2. the system folder (`System32`), where the FTDI driver installs `FTD2XX.dll`.
+1. the folder of the module that contains ftdi_utils, if the DLL is there. It is the folder of the
+   executable when ftdi_utils is linked in an application (EMCR), and the folder of the DLL when it
+   is linked in a DLL loaded by another program (e.g. `e384commlib_labview.dll` loaded by LabVIEW);
+2. the folder of the executable;
+3. the system folder (`System32`), where the FTDI driver installs `FTD2XX.dll`.
 
 The current directory and the `PATH` are **never** searched: a DLL with the same name placed
 somewhere else cannot be loaded by mistake, and development builds behave like installed ones.
