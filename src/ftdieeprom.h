@@ -149,6 +149,7 @@ typedef enum {
 
     /*! Subversions used for ver = FE */
     DeviceSubversionProtoE1E4nBased = 1,
+    DeviceSubversionProtoE16HcCdb = 4,
     DeviceSubversionProtoEl04E = 9,
     DeviceSubversionProtoEl03F_4E = 10,
     DeviceSubversionProtoE2HCExtAdc = 14,
