@@ -1,13 +1,25 @@
 @PACKAGE_INIT@
 
-cmake_path(SET LIBMPSSE_PATH_CMAKE "$ENV{LIBMPSSE_PATH}")
-list(APPEND CMAKE_PREFIX_PATH "${LIBMPSSE_PATH_CMAKE}")
 include(CMakeFindDependencyMacro)
 
-find_dependency(MPSSE REQUIRED)
-if(NOT CMAKE_BUILD_TYPE)
-    set(CURRENT_CONFIG "Release")
-else()
-    set(CURRENT_CONFIG "${CMAKE_BUILD_TYPE}")
+# MPSSE is needed only for the headers (ftd2xx.h, libmpsse_spi.h): the DLLs are loaded at runtime
+if(DEFINED ENV{LIBMPSSE_PATH})
+    cmake_path(SET _ftdi_utils_mpsse_path "$ENV{LIBMPSSE_PATH}")
+    list(APPEND CMAKE_PREFIX_PATH "${_ftdi_utils_mpsse_path}")
+    unset(_ftdi_utils_mpsse_path)
 endif()
-include("${CMAKE_CURRENT_LIST_DIR}/${CURRENT_CONFIG}/ftdi_utilsTargets.cmake")
+find_dependency(MPSSE CONFIG)
+
+# A single targets file for all configurations: CMake loads ftdi_utilsTargets-debug.cmake,
+# ftdi_utilsTargets-release.cmake, ... and picks the right library for each build type
+# (works with Visual Studio / Ninja Multi-Config too)
+include("${CMAKE_CURRENT_LIST_DIR}/ftdi_utilsTargets.cmake")
+
+# RelWithDebInfo / MinSizeRel use the release runtime (/MD): link the Release library,
+# not the Debug one (otherwise MSVC fails with LNK2038 RuntimeLibrary mismatch)
+set_target_properties(ftdi_utils::ftdi_utils PROPERTIES
+    MAP_IMPORTED_CONFIG_RELWITHDEBINFO "Release"
+    MAP_IMPORTED_CONFIG_MINSIZEREL "Release"
+)
+
+check_required_components(ftdi_utils)
